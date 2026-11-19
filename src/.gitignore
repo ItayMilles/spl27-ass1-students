@@ -1,0 +1,6 @@
+build/
+bin/
+out/
+*.o
+*.exe
+.vscode/ipch/
