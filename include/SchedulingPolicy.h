@@ -1,22 +1,22 @@
 #ifndef SCHEDULING_POLICY_H_
 #define SCHEDULING_POLICY_H
 
+#include <vector>
+
+class Request;
+class GPU;
+
 class SchedulingPolicy {
-public:
+  public:
     virtual ~SchedulingPolicy() = default;
-    virtual std::vector<int> choose(const std::vector<const Request*>& eligible, const std::vector<GPU>& gpus) const = 0;
-    virtual SchedulingPolicy* clone() const = 0;
+    virtual std::vector<int>
+    choose(const std::vector<const Request *> &eligible,
+           const std::vector<GPU> &gpus) const = 0;
+    virtual SchedulingPolicy *clone() const = 0;
 };
 
-class ArrivalOrderPolicy : public SchedulingPolicy { 
-
-};
-class ShortestJobPolicy : public SchedulingPolicy { 
-
-};
-class LongestPrefixPolicy : public SchedulingPolicy {
-
-};
-
+class ArrivalOrderPolicy : public SchedulingPolicy {};
+class ShortestJobPolicy : public SchedulingPolicy {};
+class LongestPrefixPolicy : public SchedulingPolicy {};
 
 #endif

@@ -18,6 +18,7 @@ class Request {
 
   public:
     Request(int id, const Model &model, int admissionCycle, std::string prompt);
+    Request(const Request &other, const Model &model);
     virtual ~Request();
     virtual std::size_t getNeededMemory(const GPU &gpu) const = 0;
     virtual std::size_t getMaxNeededMemory() const = 0;
@@ -37,27 +38,57 @@ class Request {
 
 class GenerativeRequest : public Request {
   private:
+    // output
     std::string scriptedOutput;
+    // max size of output
     std::size_t maxOutputTokens;
+    // tokinize output
     std::vector<std::string> scriptedTokens;
+    // how many tokens have been processed
     std::size_t processedTokens;
-    std::vector<std::string> generatedTokens;
+    // the current sequence of tokens
+    std::vector<std::string> sequence;
 
   public:
     GenerativeRequest(int id, const Model &model, int admissionCycle,
                       std::string prompt, std::string scriptedOutput,
                       std::size_t maxOutputTokens);
+    GenerativeRequest(const GenerativeRequest &other, const Model &model);
 
     std::vector<std::string> getCacheableTokens() const;
     std::size_t getMaxNeededMemory() const;
     std::size_t getNeededMemory(const GPU &gpu) const;
     void reserveMemory(GPU &gpu);
+    void allocateOneBlock(GPU &gpu, std::size_t slot) const;
+    Request *clone(const Model &model) const;
+    bool finished() const;
+    std::string getOutput() const;
+    std::size_t getNeedToUnreserve() const;
+    void act(GPU &gpu);
 };
 
 class EmbeddingRequest : public Request {
   public:
     EmbeddingRequest(int id, const Model &model, int admissionCycle,
                      std::string prompt);
+    EmbeddingRequest(const EmbeddingRequest &other, const Model &model);
+
+    std::vector<std::string> getCacheableTokens() const;
+    std::size_t getMaxNeededMemory() const;
+    std::size_t getNeededMemory(const GPU &gpu) const;
+    void reserveMemory(GPU &gpu);
+    void allocateOneBlock(GPU &gpu, std::size_t slot) const;
+    Request *clone(const Model &model) const;
+    bool finished() const;
+    std::string getOutput() const;
+    std::size_t getNeedToUnreserve() const;
+    void act(GPU &gpu);
+
+  private:
+    // how many tokens have been processed
+    std::size_t processedTokens;
+    // the resulted mean vector
+    std::vector<int> result;
 };
 
 #endif

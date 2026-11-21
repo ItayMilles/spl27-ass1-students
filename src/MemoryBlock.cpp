@@ -76,10 +76,12 @@ IdleAction MemoryBlock::release() {
         refCount--;
     }
     if (refCount == 0) {
-        return MemoryBlock::onLastRelease();
+        return onLastRelease();
     }
     return IdleAction::KeepCached;
 }
+
+int MemoryBlock::getRefCount() const { return refCount; }
 
 // KVBlock implementation
 KVBlock::KVBlock(std::size_t size) : MemoryBlock(size) {}
